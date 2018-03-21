@@ -1,0 +1,168 @@
+//
+//  RoomViewController.m
+//  AgoraAudioIO
+//
+//  Created by suleyu on 2017/12/15.
+//  Copyright © 2017 Agora. All rights reserved.
+//
+
+#import "RoomViewControllerMac.h"
+#import "AppID.h"
+#import "ExternalAudio.h"
+#import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
+
+@interface RoomViewControllerMac ()<AgoraRtcEngineDelegate>
+@property (unsafe_unretained) IBOutlet NSTextView *logTextView;
+@property (weak) IBOutlet NSTextField *channelNameTextField;
+@property (weak) IBOutlet NSButton *roleButton;
+
+@property (nonatomic, strong) ExternalAudio *exAudio;
+@property (nonatomic, strong) AgoraRtcEngineKit *agoraKit;
+@property (nonatomic, assign) BOOL isMute;
+@property (nonatomic, assign) BOOL isHost;
+@end
+
+@implementation RoomViewControllerMac
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.channelNameTextField.stringValue = self.channel;
+    [self loadRtcEngine];
+    [self joinChannel];
+}
+
+- (void)viewDidDisappear {
+    [AgoraRtcEngineKit destroy];
+}
+
+- (void)setIsHost:(BOOL)isHost {
+    _isHost = isHost;
+    if (_isHost) {
+        [self.roleButton setImage:[NSImage imageNamed:@"host"]];
+    }
+    else {
+        [self.roleButton setImage:[NSImage imageNamed:@"audience"]];
+    }
+}
+
+- (IBAction)didClickMuteButton:(NSButton *)sender {
+    _isMute = !_isMute;
+    [self.agoraKit muteLocalAudioStream:_isMute];
+    if (!_isMute) {
+        sender.image = [NSImage imageNamed:@"unmutemac"];
+    } else {
+        sender.image = [NSImage imageNamed:@"mute"];
+    }
+}
+
+- (IBAction)didClickHangUpButton:(NSButton *)sender {
+    sender.enabled = NO;
+    [self.exAudio stopWork];
+    [self.agoraKit leaveChannel:nil];
+    [self.delegate roomVCNeedClose:self];
+}
+
+- (IBAction)didClickRoleChangedButton:(NSButton *)sender {
+    self.isHost = !self.isHost;
+    AgoraClientRole role = self.isHost == AgoraClientRoleBroadcaster ? AgoraClientRoleBroadcaster : AgoraClientRoleAudience;
+    [self.agoraKit setClientRole:role];
+}
+
+- (void)appendToLogView:(NSString*)text {
+    NSString *string = [NSString stringWithFormat:@"%@\n", text];
+    NSAttributedString* attr = [[NSAttributedString alloc] initWithString:string];
+    [[self.logTextView textStorage] appendAttributedString:attr];
+    [self.logTextView scrollRangeToVisible:NSMakeRange([[self.logTextView string] length], 0)];
+}
+
+- (void)loadRtcEngine {
+    self.agoraKit = [AgoraRtcEngineKit sharedEngineWithAppId:[AppID appID] delegate:self];
+    
+    if (self.channelMode == ChannelModeLiveBroadcast) {
+        self.roleButton.hidden = NO;
+        self.isHost = self.role == ClientRoleBroadcast ? YES : NO;
+        [self.agoraKit setChannelProfile:AgoraChannelProfileLiveBroadcasting];
+        AgoraClientRole role = self.role == ClientRoleBroadcast ? AgoraClientRoleBroadcaster : AgoraClientRoleAudience;
+        [self.agoraKit setClientRole:role];
+    }
+    
+    if (self.audioMode != AudioCRMode_SDKCapture_SDKRender) {
+        self.exAudio = [ExternalAudio sharedExternalAudio];
+        [self.exAudio setupExternalAudioWithAgoraKit:self.agoraKit audioCRMode:self.audioMode IOType:IOUnitTypeVPIO];
+    }
+    
+    switch (self.audioMode) {
+        case AudioCRMode_ExterCapture_SDKRender:
+            [self appendToLogView:[NSString stringWithFormat:@"AudioCRMode_ExterCapture_SDKRender"]];
+            [self.agoraKit setParameters: @"{\"che.audio.external_capture\": true}"];
+            [self.agoraKit setParameters: @"{\"che.audio.external_render\": false}"];
+            [self.agoraKit setRecordingAudioFrameParametersWithSampleRate:(NSInteger)sampleRate channel:channels mode:AgoraAudioRawFrameOperationModeWriteOnly samplesPerCall:(NSInteger)sampleRate * channels * 0.01];
+            break;
+            
+        case AudioCRMode_SDKCapture_ExterRender:
+            [self appendToLogView:[NSString stringWithFormat:@"AudioCRMode_SDKCapture_ExterRender"]];
+            [self.agoraKit setParameters: @"{\"che.audio.external_capture\": false}"];
+            [self.agoraKit setParameters: @"{\"che.audio.external_render\": true}"];
+            [self.agoraKit setPlaybackAudioFrameParametersWithSampleRate:(NSInteger)sampleRate channel:channels mode:AgoraAudioRawFrameOperationModeReadOnly samplesPerCall:(NSInteger)sampleRate * channels * 0.01];
+            break;
+            
+        case AudioCRMode_SDKCapture_SDKRender:
+            [self appendToLogView:[NSString stringWithFormat:@"AudioCRMode_SDKCapture_SDKRender"]];
+            [self.agoraKit setParameters: @"{\"che.audio.external_capture\": false}"];
+            [self.agoraKit setParameters: @"{\"che.audio.external_render\": false}"];
+            break;
+            
+        case AudioCRMode_ExterCapture_ExterRender:
+            [self appendToLogView:[NSString stringWithFormat:@"AudioCRMode_ExterCapture_ExterRender"]];
+            [self.agoraKit setParameters: @"{\"che.audio.external_capture\": true}"];
+            [self.agoraKit setParameters: @"{\"che.audio.external_render\": true}"];
+            [self.agoraKit setRecordingAudioFrameParametersWithSampleRate:(NSInteger)sampleRate channel:channels mode:AgoraAudioRawFrameOperationModeWriteOnly samplesPerCall:(NSInteger)sampleRate * channels * 0.01];
+            [self.agoraKit setPlaybackAudioFrameParametersWithSampleRate:(NSInteger)sampleRate channel:channels mode:AgoraAudioRawFrameOperationModeReadOnly samplesPerCall:(NSInteger)sampleRate * channels * 0.01];
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (void)joinChannel {
+    [self.agoraKit joinChannelByToken:nil channelId:self.channel info:nil uid:0 joinSuccess:nil];
+}
+
+#pragma mark - AgoraRtcEngineDelegate
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinChannel:(NSString*)channel withUid:(NSUInteger)uid elapsed:(NSInteger) elapsed {
+    [self.exAudio startWork];
+    [self appendToLogView:[NSString stringWithFormat:@"rtcEngine:didJoinChannel:withUid : %zd", uid]];
+}
+
+- (void)rtcEngineConnectionDidInterrupted:(AgoraRtcEngineKit *)engine {
+    [self appendToLogView:@"rtcEngineConnectionDidInterrupted"];
+}
+
+- (void)rtcEngineConnectionDidLost:(AgoraRtcEngineKit *)engine {
+    [self appendToLogView:@"rtcEngineConnectionDidLost"];
+}
+
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurError:(AgoraErrorCode)errorCode {
+    [self appendToLogView:[NSString stringWithFormat:@"rtcEngine:didOccurError: %zd", errorCode]];
+}
+
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didRejoinChannel:(NSString *)channel withUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
+    [self appendToLogView:[NSString stringWithFormat:@"rtcEngine:didRejoinChannel:withUid: %zd", uid]];
+}
+
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed {
+    [self appendToLogView:[NSString stringWithFormat:@"rtcEngine:didJoinedOfUid: %zd", uid]];
+}
+
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
+    [self appendToLogView:[NSString stringWithFormat:@"rtcEngine:didOfflineOfUid: %zd, reason:%zd", uid, reason]];
+}
+
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didClientRoleChanged:(AgoraClientRole)oldRole newRole:(AgoraClientRole)newRole {
+    NSString *newRoleStr = newRole == AgoraClientRoleAudience ? @"Audience" : @"Broadcast";
+    [self appendToLogView:[NSString stringWithFormat:@"Self became %@", newRoleStr]];
+}
+
+@end
