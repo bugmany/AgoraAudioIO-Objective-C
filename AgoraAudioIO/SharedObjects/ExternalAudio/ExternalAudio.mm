@@ -22,6 +22,7 @@
 
 @interface ExternalAudio () <AudioControllerDelegate>
 @property (nonatomic, strong) AudioController *audioController;
+@property (nonatomic, assign) AudioCRMode audioCRMode;
 @property (nonatomic, weak) AgoraRtcEngineKit *agoraKit;
 @end
 
@@ -251,7 +252,7 @@ static AgoraAudioFrameObserver* s_audioFrameObserver;
     }
     
     self.agoraKit = agoraKit;
-    
+    self.audioCRMode = audioCRMode;
 }
 
 - (void)startWork {
@@ -271,9 +272,16 @@ static AgoraAudioFrameObserver* s_audioFrameObserver;
 }
 
 - (void)audioController:(AudioController *)controller didCaptureData:(unsigned char *)data bytesLength:(int)bytesLength {
-    if (s_audioFrameObserver) {
-        s_audioFrameObserver -> pushExternalData(data, bytesLength);
+    
+    if (self.audioCRMode != AudioCRMode_ExterCapture_SDKRender) {
+        if (s_audioFrameObserver) {
+            s_audioFrameObserver -> pushExternalData(data, bytesLength);
+        }
     }
+    else {
+        [self.agoraKit pushExternalAudioFrameRawData:data samples:bytesLength / 2 timestamp:0];
+    }
+    
 }
 
 - (int)audioController:(AudioController *)controller didRenderData:(unsigned char *)data bytesLength:(int)bytesLength {
