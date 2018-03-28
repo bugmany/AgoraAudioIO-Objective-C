@@ -63,10 +63,7 @@
     switch (self.audioMode) {
         case AudioCRMode_ExterCapture_SDKRender:
             [self.tableView appendInfoToTableViewWithInfo:[NSString stringWithFormat:@"AudioCRMode_ExterCapture_SDKRender"]];
-//            [self.agoraKit setParameters: @"{\"che.audio.external_capture\": true}"];
-//            [self.agoraKit setParameters: @"{\"che.audio.external_render\": false}"];
             [self.agoraKit enableExternalAudioSourceWithSampleRate:sampleRate channelsPerFrame:channels];
-            [self.agoraKit setRecordingAudioFrameParametersWithSampleRate:(NSInteger)sampleRate channel:channels mode:AgoraAudioRawFrameOperationModeWriteOnly samplesPerCall:(NSInteger)sampleRate * channels * 0.01];
             break;
             
         case AudioCRMode_SDKCapture_ExterRender:
