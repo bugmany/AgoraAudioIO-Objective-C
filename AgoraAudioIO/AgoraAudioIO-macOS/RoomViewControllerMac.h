@@ -15,10 +15,10 @@
 @end
 
 @interface RoomViewControllerMac : NSViewController
-@property (copy, nonatomic) NSString *channel;
-@property (assign, nonatomic) int sampleRate;
-@property (assign, nonatomic) AudioCRMode audioMode;
-@property (assign, nonatomic) ChannelMode channelMode;
-@property (assign, nonatomic) ClientRole role;
-@property (strong, nonatomic) id<RoomVCMacDelegate> delegate;
+@property (nonatomic, assign) int sampleRate;
+@property (nonatomic, assign) AudioCRMode audioMode;
+@property (nonatomic, assign) ChannelMode channelMode;
+@property (nonatomic, assign) ClientRole role;
+@property (nonatomic, strong) id<RoomVCMacDelegate> delegate;
+@property (nonatomic, copy)   NSString *channelName;
 @end

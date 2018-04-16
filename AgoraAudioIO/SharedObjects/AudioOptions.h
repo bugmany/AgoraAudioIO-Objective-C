@@ -33,9 +33,6 @@ typedef NS_ENUM(int, ClientRole) {
     ClientRoleBroadcast = 1
 };
 
-static int channels = 1;
-static int sampleRate = 44100;
-
 #if TARGET_OS_IPHONE
 #import "UIColor+SRXRGB.h"
 #import "UIView+SRXshortFrame.h"

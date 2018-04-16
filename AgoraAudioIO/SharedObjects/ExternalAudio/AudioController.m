@@ -108,6 +108,7 @@ static OSStatus renderCallBack(void *inRefCon,
 
 #pragma mark - <Step 1, Set Up Audio Session>
 - (void)setUpAudioSessionWithSampleRate:(int)sampleRate channelCount:(int)channelCount audioCRMode:(AudioCRMode)audioCRMode IOType:(IOUnitType)ioType{
+    
     self.audioCRMode = audioCRMode;
     self.sampleRate = sampleRate;
     self.channelCount = channelCount;
@@ -139,7 +140,7 @@ static OSStatus renderCallBack(void *inRefCon,
     // AudioComponentDescription
     AudioComponentDescription remoteIODesc;
     remoteIODesc.componentType = kAudioUnitType_Output;
-    remoteIODesc.componentSubType = ioType == IOUnitTypeVPIO ? kAudioUnitSubType_VoiceProcessingIO : kAudioUnitSubType_RemoteIO;
+    remoteIODesc.componentSubType = ioType == IOUnitTypeVPIO == IOUnitTypeVPIO? kAudioUnitSubType_VoiceProcessingIO : kAudioUnitSubType_RemoteIO;
     remoteIODesc.componentManufacturer = kAudioUnitManufacturer_Apple;
     remoteIODesc.componentFlags = 0;
     remoteIODesc.componentFlagsMask = 0;
@@ -237,8 +238,8 @@ static OSStatus renderCallBack(void *inRefCon,
     
     // Set the sample rate of the input device to the output samplerate (if possible)
     AudioValueRange inputSampleRate;
-    inputSampleRate.mMinimum = sampleRate;
-    inputSampleRate.mMaximum = sampleRate;
+    inputSampleRate.mMinimum = _sampleRate;
+    inputSampleRate.mMaximum = _sampleRate;
     defaultDeviceProperty.mSelector = kAudioDevicePropertyNominalSampleRate;
     
     _error = AudioObjectSetPropertyData(defaultDevice,
@@ -372,7 +373,7 @@ static OSStatus renderCallBack(void *inRefCon,
 
 - (void)error:(OSStatus)error position:(NSString *)position {
     if (error != noErr) {
-        NSString *errorInfo = [NSString stringWithFormat:@"<ACLog> Error: %d, Position: %@", error, position];
+        NSString *errorInfo = [NSString stringWithFormat:@"<ACLog> Error: %d, Position: %@", (int)error, position];
         if ([self.delegate respondsToSelector:@selector(audioController:error:info:)]) {
             [self.delegate audioController:self error:error info:position];
         }

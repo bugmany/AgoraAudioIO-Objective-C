@@ -23,6 +23,8 @@
 @interface ExternalAudio () <AudioControllerDelegate>
 @property (nonatomic, strong) AudioController *audioController;
 @property (nonatomic, assign) AudioCRMode audioCRMode;
+@property (nonatomic, assign) int sampleRate;
+@property (nonatomic, assign) int channelCount;
 @property (nonatomic, weak) AgoraRtcEngineKit *agoraKit;
 @end
 
@@ -222,7 +224,7 @@ static AgoraAudioFrameObserver* s_audioFrameObserver;
     return audio;
 }
 
-- (void)setupExternalAudioWithAgoraKit:(AgoraRtcEngineKit *)agoraKit audioCRMode:(AudioCRMode)audioCRMode IOType:(IOUnitType)ioType {
+- (void)setupExternalAudioWithAgoraKit:(AgoraRtcEngineKit *)agoraKit sampleRate:(int)sampleRate channels:(int)channels audioCRMode:(AudioCRMode)audioCRMode IOType:(IOUnitType)ioType {
     
     threadLockCapture = [[NSObject alloc] init];
     threadLockPlay = [[NSObject alloc] init];

@@ -25,6 +25,7 @@
 @property (nonatomic, strong) AgoraRtcEngineKit *agoraKit;
 @property (nonatomic, strong) ExternalAudio *exAudio;
 @property (nonatomic, strong) NSMutableArray *infoArray;
+@property (nonatomic, assign) int channels;
 @end
 
 @implementation RoomViewController
@@ -46,7 +47,7 @@
 
 #pragma mark - initAgoraKitAndInitAudioController
 - (void)initAgoraKitAndInitAudioController {
-    
+    self.channels = 1;
     self.agoraKit = [AgoraRtcEngineKit sharedEngineWithAppId:[AppID appID] delegate:self];
     
     if (self.channelMode == ChannelModeLiveBroadcast) {
@@ -57,20 +58,20 @@
     
     if (self.audioMode != AudioCRMode_SDKCapture_SDKRender) {
         self.exAudio = [ExternalAudio sharedExternalAudio];
-        [self.exAudio setupExternalAudioWithAgoraKit:self.agoraKit audioCRMode:self.audioMode IOType:IOUnitTypeRemoteIO];
+        [self.exAudio setupExternalAudioWithAgoraKit:self.agoraKit sampleRate:_sampleRate channels:_channels audioCRMode:self.audioMode IOType:IOUnitTypeRemoteIO];
     }
   
     switch (self.audioMode) {
         case AudioCRMode_ExterCapture_SDKRender:
             [self.tableView appendInfoToTableViewWithInfo:[NSString stringWithFormat:@"AudioCRMode_ExterCapture_SDKRender"]];
-            [self.agoraKit enableExternalAudioSourceWithSampleRate:sampleRate channelsPerFrame:channels];
+            [self.agoraKit enableExternalAudioSourceWithSampleRate:_sampleRate channelsPerFrame:_channels];
             break;
             
         case AudioCRMode_SDKCapture_ExterRender:
             [self.tableView appendInfoToTableViewWithInfo:[NSString stringWithFormat:@"AudioCRMode_SDKCapture_ExterRender"]];
             [self.agoraKit setParameters: @"{\"che.audio.external_capture\": false}"];
             [self.agoraKit setParameters: @"{\"che.audio.external_render\": true}"];
-            [self.agoraKit setPlaybackAudioFrameParametersWithSampleRate:(NSInteger)sampleRate channel:channels mode:AgoraAudioRawFrameOperationModeReadOnly samplesPerCall:(NSInteger)sampleRate * channels * 0.01];
+            [self.agoraKit setPlaybackAudioFrameParametersWithSampleRate:(NSInteger)_sampleRate channel:_channels mode:AgoraAudioRawFrameOperationModeReadOnly samplesPerCall:(NSInteger)_sampleRate * _channels * 0.01];
             break;
             
         case AudioCRMode_SDKCapture_SDKRender:
@@ -83,8 +84,8 @@
             [self.tableView appendInfoToTableViewWithInfo:[NSString stringWithFormat:@"AudioCRMode_ExterCapture_ExterRender"]];
             [self.agoraKit setParameters: @"{\"che.audio.external_capture\": true}"];
             [self.agoraKit setParameters: @"{\"che.audio.external_render\": true}"];
-            [self.agoraKit setRecordingAudioFrameParametersWithSampleRate:(NSInteger)sampleRate channel:channels mode:AgoraAudioRawFrameOperationModeWriteOnly samplesPerCall:(NSInteger)sampleRate * channels * 0.01];
-            [self.agoraKit setPlaybackAudioFrameParametersWithSampleRate:(NSInteger)sampleRate channel:channels mode:AgoraAudioRawFrameOperationModeReadOnly samplesPerCall:(NSInteger)sampleRate * channels * 0.01];
+            [self.agoraKit setRecordingAudioFrameParametersWithSampleRate:(NSInteger)_sampleRate channel:_channels mode:AgoraAudioRawFrameOperationModeWriteOnly samplesPerCall:(NSInteger)_sampleRate * _channels * 0.01];
+            [self.agoraKit setPlaybackAudioFrameParametersWithSampleRate:(NSInteger)_sampleRate channel:_channels mode:AgoraAudioRawFrameOperationModeReadOnly samplesPerCall:(NSInteger)_sampleRate * _channels * 0.01];
             break;
             
         default:
@@ -138,7 +139,7 @@
     }
     
     if (self.audioMode == AudioCRMode_ExterCapture_ExterRender || self.audioMode == AudioCRMode_SDKCapture_ExterRender) {
-        [[AVAudioSession sharedInstance] setPreferredSampleRate:sampleRate error:nil];
+        [[AVAudioSession sharedInstance] setPreferredSampleRate:_sampleRate error:nil];
     }
 }
 

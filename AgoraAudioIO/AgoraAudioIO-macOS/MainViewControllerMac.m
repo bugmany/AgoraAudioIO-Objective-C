@@ -75,9 +75,9 @@
             case 3: mode = AudioCRMode_ExterCapture_ExterRender; break;
             default: break;
         }
-        sampleRate = self.sampleRateSegControl.selectedSegment == 0 ? 44100 : 48000;
+        int sampleRate = self.sampleRateSegControl.selectedSegment == 0 ? 44100 : 48000;
         RoomViewControllerMac *roomVC = segue.destinationController;
-        roomVC.channel = self.channelNameTextField.stringValue;
+        roomVC.channelName = self.channelNameTextField.stringValue;
         roomVC.sampleRate = sampleRate;
         roomVC.audioMode = mode;
         roomVC.channelMode = self.channelMode;

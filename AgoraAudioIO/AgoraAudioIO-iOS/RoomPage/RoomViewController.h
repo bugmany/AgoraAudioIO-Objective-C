@@ -12,5 +12,6 @@
 @property (nonatomic, assign) AudioCRMode audioMode;
 @property (nonatomic, assign) ChannelMode channelMode;
 @property (nonatomic, assign) ClientRole clientRole;
+@property (nonatomic, assign) int sampleRate;
 @property (nonatomic, copy) NSString *channelName;
 @end

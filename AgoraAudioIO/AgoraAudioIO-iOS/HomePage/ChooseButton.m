@@ -33,11 +33,8 @@
 
 - (void)sendAction:(SEL)action to:(id)target forEvent:(UIEvent *)event {
     self.isClick = !self.isClick;
-    
     CGColorRef colorRef = self.isClick ? [UIColor blueColor].CGColor : [UIColor whiteColor].CGColor;
-    
     self.layer.borderColor = colorRef;
-    
     [super sendAction:action to:target forEvent:event];
 }
 

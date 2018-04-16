@@ -24,7 +24,6 @@
 @property (nonatomic, assign) AudioCRMode audioMode;
 @property (nonatomic, assign) ChannelMode channelMode;
 @property (nonatomic, assign) ClientRole clientRole;
-@property (nonatomic, strong) dispatch_semaphore_t sema;
 @property (nonatomic, strong) NSArray *sampleRateArray;
 @property (nonatomic, weak) UIButton *lastButton;
 @end
@@ -52,15 +51,16 @@
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender {
+    int sampleRate = (int)[self.sampleRateArray[self.sampleRateSegControl.selectedSegmentIndex] intValue];
+    
     RoomViewController *roomVC = segue.destinationViewController;
     roomVC.channelName = self.channelNameTextField.text;
     roomVC.audioMode = self.audioMode;
     roomVC.channelMode = self.channelMode;
+    roomVC.sampleRate = sampleRate;
     if (roomVC.channelMode == ChannelModeLiveBroadcast) {
         roomVC.clientRole = self.clientRole;
     }
-    
-    sampleRate = (int)[self.sampleRateArray[self.sampleRateSegControl.selectedSegmentIndex] intValue];
 }
 
 - (IBAction)editingChannelName:(UITextField *)sender {
