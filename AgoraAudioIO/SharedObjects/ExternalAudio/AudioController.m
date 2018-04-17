@@ -108,6 +108,9 @@ static OSStatus renderCallBack(void *inRefCon,
 
 #pragma mark - <Step 1, Set Up Audio Session>
 - (void)setUpAudioSessionWithSampleRate:(int)sampleRate channelCount:(int)channelCount audioCRMode:(AudioCRMode)audioCRMode IOType:(IOUnitType)ioType{
+    if (_audioCRMode == AudioCRMode_SDKCapture_SDKRender) {
+        return;
+    }
     
     self.audioCRMode = audioCRMode;
     self.sampleRate = sampleRate;
@@ -140,15 +143,18 @@ static OSStatus renderCallBack(void *inRefCon,
     // AudioComponentDescription
     AudioComponentDescription remoteIODesc;
     remoteIODesc.componentType = kAudioUnitType_Output;
-    remoteIODesc.componentSubType = ioType == IOUnitTypeVPIO == IOUnitTypeVPIO? kAudioUnitSubType_VoiceProcessingIO : kAudioUnitSubType_RemoteIO;
+    remoteIODesc.componentSubType = ioType == IOUnitTypeVPIO ? kAudioUnitSubType_VoiceProcessingIO : kAudioUnitSubType_RemoteIO;
     remoteIODesc.componentManufacturer = kAudioUnitManufacturer_Apple;
     remoteIODesc.componentFlags = 0;
     remoteIODesc.componentFlagsMask = 0;
     AudioComponent remoteIOComponent = AudioComponentFindNext(NULL, &remoteIODesc);
     _error = AudioComponentInstanceNew(remoteIOComponent, &_remoteIOUnit);
     [self error:_error position:@"AudioComponentInstanceNew"];
-#else
+#endif
+    
     if (_audioCRMode == AudioCRMode_ExterCapture_SDKRender || _audioCRMode == AudioCRMode_ExterCapture_ExterRender) {
+        
+#if !TARGET_OS_IPHONE
         AudioComponentDescription remoteIODesc;
         remoteIODesc.componentType = kAudioUnitType_Output;
         remoteIODesc.componentSubType = kAudioUnitSubType_HALOutput;
@@ -160,10 +166,7 @@ static OSStatus renderCallBack(void *inRefCon,
         [self error:_error position:@"AudioComponentInstanceNew"];
         _error = AudioUnitInitialize(_remoteIOUnit);
         [self error:_error position:@"AudioUnitInitialize"];
-    }
 #endif
-    
-    if (_audioCRMode == AudioCRMode_ExterCapture_SDKRender || _audioCRMode == AudioCRMode_ExterCapture_ExterRender) {
         [self setupCapture];
     }
     
@@ -189,8 +192,6 @@ static OSStatus renderCallBack(void *inRefCon,
 
 - (void)setupCapture {
     // EnableIO
-    
-#if TARGET_OS_IPHONE
     UInt32 one = 1;
     _error = AudioUnitSetProperty(_remoteIOUnit,
                                    kAudioOutputUnitProperty_EnableIO,
@@ -199,18 +200,10 @@ static OSStatus renderCallBack(void *inRefCon,
                                    &one,
                                    sizeof(one));
     [self error:_error position:@"kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input"];
-#else // macOS
-    UInt32 one = 1;
+
+#if !TARGET_OS_IPHONE
     UInt32 disableFlag = 0;
     
-    _error = AudioUnitSetProperty(_remoteIOUnit,
-                                  kAudioOutputUnitProperty_EnableIO,
-                                  kAudioUnitScope_Input,
-                                  InputBus,
-                                  &one,
-                                  sizeof(one));
-     [self error:_error position:@"kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input"];
-
     // Attention! set kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, disable
     _error = AudioUnitSetProperty(_remoteIOUnit,
                                   kAudioOutputUnitProperty_EnableIO,
@@ -237,17 +230,15 @@ static OSStatus renderCallBack(void *inRefCon,
     [self error:_error position:@"AudioObjectGetPropertyData, kAudioObjectSystemObject"];
     
     // Set the sample rate of the input device to the output samplerate (if possible)
-    AudioValueRange inputSampleRate;
-    inputSampleRate.mMinimum = _sampleRate;
-    inputSampleRate.mMaximum = _sampleRate;
+    Float64 temp = _sampleRate;
     defaultDeviceProperty.mSelector = kAudioDevicePropertyNominalSampleRate;
     
     _error = AudioObjectSetPropertyData(defaultDevice,
                                         &defaultDeviceProperty,
                                         0,
                                         NULL,
-                                        sizeof(inputSampleRate),
-                                        &inputSampleRate);
+                                        sizeof(Float64),
+                                        &temp);
     [self error:_error position:@"AudioObjectSetPropertyData, defaultDeviceProperty"];
     
     // Set the input device to the system's default input device
@@ -349,9 +340,16 @@ static OSStatus renderCallBack(void *inRefCon,
 
 - (void)startWork {
 #if TARGET_OS_IPHONE
-    AudioOutputUnitStart(_remoteIOUnit);
+    _error = AudioOutputUnitStart(_remoteIOUnit);
+    [self error:_error position:@"AudioOutputUnitStart"];
 #else
-    AudioOutputUnitStart(_remoteIOUnit);
+    if (_audioCRMode == AudioCRMode_ExterCapture_SDKRender || _audioCRMode == AudioCRMode_ExterCapture_ExterRender) {
+        _error = AudioOutputUnitStart(_remoteIOUnit);
+        if (_error != noErr) {
+            [self error:_error position:@"AudioOutputUnitStart"];
+            return;
+        }
+    }
     
     if (self.audioCRMode == AudioCRMode_ExterCapture_ExterRender || self.audioCRMode == AudioCRMode_SDKCapture_ExterRender) {
         _error = AudioOutputUnitStart(_macPlayUnit);
@@ -364,7 +362,10 @@ static OSStatus renderCallBack(void *inRefCon,
 #if TARGET_OS_IPHONE
     AudioOutputUnitStop(_remoteIOUnit);
 #else
-    AudioOutputUnitStop(_remoteIOUnit);
+    if (_audioCRMode == AudioCRMode_ExterCapture_SDKRender || _audioCRMode == AudioCRMode_ExterCapture_ExterRender) {
+        AudioOutputUnitStop(_remoteIOUnit);
+    }
+    
     if (self.audioCRMode == AudioCRMode_ExterCapture_ExterRender || self.audioCRMode == AudioCRMode_SDKCapture_ExterRender) {
         AudioOutputUnitStop(_macPlayUnit);
     }
@@ -396,9 +397,20 @@ static OSStatus renderCallBack(void *inRefCon,
 }
 
 - (void)dealloc {
-    AudioOutputUnitStop(_remoteIOUnit);
-    AudioComponentInstanceDispose(_remoteIOUnit);
-    _remoteIOUnit = nil;
+    if (_remoteIOUnit) {
+        AudioOutputUnitStop(_remoteIOUnit);
+        AudioComponentInstanceDispose(_remoteIOUnit);
+        _remoteIOUnit = nil;
+    }
+    
+#if !TARGET_OS_IPHONE
+    if (_macPlayUnit) {
+        AudioOutputUnitStop(_macPlayUnit);
+        AudioComponentInstanceDispose(_macPlayUnit);
+        _macPlayUnit = nil;
+    }
+#endif
+    
     NSLog(@"<ACLog> AudioController dealloc");
 }
 
