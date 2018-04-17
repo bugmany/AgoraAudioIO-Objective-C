@@ -30,6 +30,14 @@
 
 @implementation RoomViewController
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if (self) {
+        _channels = 1;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupViews];
@@ -47,7 +55,6 @@
 
 #pragma mark - initAgoraKitAndInitAudioController
 - (void)initAgoraKitAndInitAudioController {
-    self.channels = 1;
     self.agoraKit = [AgoraRtcEngineKit sharedEngineWithAppId:[AppID appID] delegate:self];
     
     if (self.channelMode == ChannelModeLiveBroadcast) {
