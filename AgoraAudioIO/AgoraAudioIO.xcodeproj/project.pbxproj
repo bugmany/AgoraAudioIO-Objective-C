@@ -17,6 +17,8 @@
 		A73042A51FBAF961001AA04B /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A730429C1FBAF926001AA04B /* AudioToolbox.framework */; };
 		A73042A61FBAF961001AA04B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A730429B1FBAF919001AA04B /* AVFoundation.framework */; };
 		A73042A71FBAF961001AA04B /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A730429A1FBAF914001AA04B /* libc++.tbd */; };
+		A730EEF820F88BCC003174AD /* UIColor+CSRGB.m in Sources */ = {isa = PBXBuildFile; fileRef = A730EEF620F88BCC003174AD /* UIColor+CSRGB.m */; };
+		A730EEF920F88BCC003174AD /* UIView+CSshortFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = A730EEF720F88BCC003174AD /* UIView+CSshortFrame.m */; };
 		A767A0862074CCC60070BAFF /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A767A07B2074CCC60070BAFF /* Info.plist */; };
 		A767A0B12074CCCD0070BAFF /* InfoTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = A767A08D2074CCCD0070BAFF /* InfoTableView.m */; };
 		A767A0B22074CCCD0070BAFF /* InfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A767A08F2074CCCD0070BAFF /* InfoModel.m */; };
@@ -28,8 +30,6 @@
 		A767A0B82074CCCD0070BAFF /* ChannelNameCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = A767A0982074CCCD0070BAFF /* ChannelNameCheck.m */; };
 		A767A0B92074CCCD0070BAFF /* LogAudioSessionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = A767A09C2074CCCD0070BAFF /* LogAudioSessionStatus.m */; };
 		A767A0BB2074CCCD0070BAFF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A767A09F2074CCCD0070BAFF /* Assets.xcassets */; };
-		A767A0BC2074CCCD0070BAFF /* UIView+SRXshortFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = A767A0A22074CCCD0070BAFF /* UIView+SRXshortFrame.m */; };
-		A767A0BD2074CCCD0070BAFF /* UIColor+SRXRGB.m in Sources */ = {isa = PBXBuildFile; fileRef = A767A0A42074CCCD0070BAFF /* UIColor+SRXRGB.m */; };
 		A767A0BE2074CCCD0070BAFF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A767A0A52074CCCD0070BAFF /* LaunchScreen.storyboard */; };
 		A767A0BF2074CCCD0070BAFF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A767A0A72074CCCD0070BAFF /* Main.storyboard */; };
 		A767A0C02074CCCD0070BAFF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A767A0A82074CCCD0070BAFF /* main.m */; };
@@ -76,6 +76,10 @@
 		A730429F1FBAF946001AA04B /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		A73042A01FBAF950001AA04B /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		A73042A81FBAF96D001AA04B /* AgoraAudioKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AgoraAudioKit.framework; path = AgoraAudioIO/AgoraAudioKit.framework; sourceTree = "<group>"; };
+		A730EEF420F88BCB003174AD /* UIColor+CSRGB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+CSRGB.h"; sourceTree = "<group>"; };
+		A730EEF520F88BCB003174AD /* UIView+CSshortFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+CSshortFrame.h"; sourceTree = "<group>"; };
+		A730EEF620F88BCC003174AD /* UIColor+CSRGB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+CSRGB.m"; sourceTree = "<group>"; };
+		A730EEF720F88BCC003174AD /* UIView+CSshortFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+CSshortFrame.m"; sourceTree = "<group>"; };
 		A767A0672074CCC60070BAFF /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		A767A0682074CCC60070BAFF /* AgoraAudioIOmac.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = AgoraAudioIOmac.entitlements; sourceTree = "<group>"; };
 		A767A0692074CCC60070BAFF /* ReplacementSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReplacementSegue.h; sourceTree = "<group>"; };
@@ -108,10 +112,6 @@
 		A767A09C2074CCCD0070BAFF /* LogAudioSessionStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogAudioSessionStatus.m; sourceTree = "<group>"; };
 		A767A09D2074CCCD0070BAFF /* ChannelNameCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChannelNameCheck.h; sourceTree = "<group>"; };
 		A767A09F2074CCCD0070BAFF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A767A0A12074CCCD0070BAFF /* UIColor+SRXRGB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+SRXRGB.h"; sourceTree = "<group>"; };
-		A767A0A22074CCCD0070BAFF /* UIView+SRXshortFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SRXshortFrame.m"; sourceTree = "<group>"; };
-		A767A0A32074CCCD0070BAFF /* UIView+SRXshortFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SRXshortFrame.h"; sourceTree = "<group>"; };
-		A767A0A42074CCCD0070BAFF /* UIColor+SRXRGB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+SRXRGB.m"; sourceTree = "<group>"; };
 		A767A0A62074CCCD0070BAFF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A767A0A72074CCCD0070BAFF /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		A767A0A82074CCCD0070BAFF /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -305,10 +305,10 @@
 		A767A0A02074CCCD0070BAFF /* Others */ = {
 			isa = PBXGroup;
 			children = (
-				A767A0A12074CCCD0070BAFF /* UIColor+SRXRGB.h */,
-				A767A0A22074CCCD0070BAFF /* UIView+SRXshortFrame.m */,
-				A767A0A32074CCCD0070BAFF /* UIView+SRXshortFrame.h */,
-				A767A0A42074CCCD0070BAFF /* UIColor+SRXRGB.m */,
+				A730EEF420F88BCB003174AD /* UIColor+CSRGB.h */,
+				A730EEF620F88BCC003174AD /* UIColor+CSRGB.m */,
+				A730EEF520F88BCB003174AD /* UIView+CSshortFrame.h */,
+				A730EEF720F88BCC003174AD /* UIView+CSshortFrame.m */,
 			);
 			path = Others;
 			sourceTree = "<group>";
@@ -463,18 +463,18 @@
 			files = (
 				A767A0B62074CCCD0070BAFF /* ChooseButton.m in Sources */,
 				A7E199612052611000CCA4CC /* AudioController.m in Sources */,
-				A767A0BC2074CCCD0070BAFF /* UIView+SRXshortFrame.m in Sources */,
 				A767A0B52074CCCD0070BAFF /* RoomViewController.m in Sources */,
 				A767A0B72074CCCD0070BAFF /* HomeViewController.m in Sources */,
+				A730EEF820F88BCC003174AD /* UIColor+CSRGB.m in Sources */,
 				A767A0B32074CCCD0070BAFF /* InfoCell.m in Sources */,
 				A767A0B12074CCCD0070BAFF /* InfoTableView.m in Sources */,
 				A730428E1FBAF8EB001AA04B /* AppID.m in Sources */,
 				A71FEA26205A8E23007BFDAE /* DefaultChannelName.m in Sources */,
-				A767A0BD2074CCCD0070BAFF /* UIColor+SRXRGB.m in Sources */,
 				A767A0B92074CCCD0070BAFF /* LogAudioSessionStatus.m in Sources */,
 				A767A0C02074CCCD0070BAFF /* main.m in Sources */,
 				A7E1995D2052611000CCA4CC /* AudioWriteToFile.m in Sources */,
 				A767A0B42074CCCD0070BAFF /* ChatButton.m in Sources */,
+				A730EEF920F88BCC003174AD /* UIView+CSshortFrame.m in Sources */,
 				A767A0C12074CCCD0070BAFF /* AppDelegate.m in Sources */,
 				A767A0B82074CCCD0070BAFF /* ChannelNameCheck.m in Sources */,
 				A767A0B22074CCCD0070BAFF /* InfoModel.m in Sources */,
@@ -621,6 +621,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
@@ -647,6 +648,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";

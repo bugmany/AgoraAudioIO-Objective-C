@@ -9,12 +9,10 @@
 #import "InfoModel.h"
 
 @implementation InfoModel
-
 + (instancetype)modelWithInfoStr:(NSString *)infoStr {
     InfoModel *model = [[InfoModel alloc] init];
     model.infoStr = [[NSString alloc] initWithString:infoStr];
     
     return model;
 }
-
 @end

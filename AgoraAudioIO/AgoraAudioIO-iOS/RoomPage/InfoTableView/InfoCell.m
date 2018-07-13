@@ -12,11 +12,9 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    
     self.infoLabel.textColor = [UIColor whiteColor];
     self.contentView.backgroundColor = [UIColor clearColor];
     self.backgroundColor = [UIColor clearColor];
-    
     self.infoLabel.preferredMaxLayoutWidth = [UIScreen mainScreen].bounds.size.width - 20;
 }
 
@@ -28,7 +26,6 @@
     if (!model.height ) {
         model.height = CGRectGetMaxY(self.infoLabel.frame);
     }
-    
 }
 
 @end

@@ -7,7 +7,7 @@
 //
 
 #import "ChooseButton.h"
-#import "UIView+SRXshortFrame.h"
+#import "UIView+CSshortFrame.h"
 
 @interface ChooseButton ()
 @property (nonatomic, assign) BOOL isClick;
@@ -26,7 +26,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    self.titleLabel.frame = CGRectMake(5, 0, self.width_SRX - 10, self.height_SRX);
+    self.titleLabel.frame = CGRectMake(5, 0, self.width_CS - 10, self.height_CS);
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.titleLabel.adjustsFontSizeToFitWidth = YES;
 }

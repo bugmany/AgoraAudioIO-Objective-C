@@ -9,7 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface InfoTableView : UITableView
-
 - (void)appendInfoToTableViewWithInfo:(NSString *)infoStr;
-
 @end

@@ -34,8 +34,8 @@ typedef NS_ENUM(int, ClientRole) {
 };
 
 #if TARGET_OS_IPHONE
-#import "UIColor+SRXRGB.h"
-#import "UIView+SRXshortFrame.h"
+#import "UIColor+CSRGB.h"
+#import "UIView+CSshortFrame.h"
 #define ThemeColor [UIColor Red:122 Green:203 Blue:253]
 #endif
 

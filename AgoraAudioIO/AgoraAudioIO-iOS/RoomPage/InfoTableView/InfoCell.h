@@ -10,8 +10,6 @@
 #import "InfoModel.h"
 
 @interface InfoCell : UITableViewCell
-
 @property (weak, nonatomic) IBOutlet UILabel *infoLabel;
 @property (nonatomic, weak) InfoModel *model;
-
 @end

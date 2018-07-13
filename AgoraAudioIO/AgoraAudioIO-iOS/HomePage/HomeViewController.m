@@ -37,14 +37,18 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.channelNameTextField.delegate = self;
-    self.channelNameTextField.text = [DefaultChannelName getDefaultChannelName];
+    [self updateViews];
 }
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    self.joinButton.layer.cornerRadius = self.joinButton.height_CS * 0.5;
+}
+
+- (void)updateViews {
+    self.channelNameTextField.delegate = self;
+    self.channelNameTextField.text = [DefaultChannelName getDefaultChannelName];
     
-    self.joinButton.layer.cornerRadius = self.joinButton.height_SRX * 0.5;
     self.joinButton.backgroundColor = [UIColor whiteColor];
     [self.joinButton setTitleColor:ThemeColor forState:UIControlStateNormal];
     self.welcomeLabel.adjustsFontSizeToFitWidth = YES;
@@ -100,7 +104,6 @@
 }
 
 - (IBAction)joinButtonClick:(UIButton *)sender {
-    
     self.channelMode = self.chaModeSegControl.selectedSegmentIndex == 0 ? ChannelModeCommunication : ChannelModeLiveBroadcast;
     
     if (self.channelMode == ChannelModeLiveBroadcast) {

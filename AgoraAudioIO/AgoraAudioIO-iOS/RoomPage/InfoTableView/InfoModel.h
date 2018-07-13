@@ -9,10 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface InfoModel : NSObject
-
 @property (nonatomic, copy) NSString *infoStr;
 @property (nonatomic, assign) float height;
-
 + (instancetype)modelWithInfoStr:(NSString *)infoStr;
-
 @end

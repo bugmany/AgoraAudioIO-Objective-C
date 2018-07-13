@@ -11,9 +11,7 @@
 #import "InfoModel.h"
 
 @interface InfoTableView () <UITableViewDelegate, UITableViewDataSource>
-
 @property (nonatomic, strong) NSMutableArray *infoArray;
-
 @end
 
 static NSString *cellID = @"infoID";
@@ -33,11 +31,8 @@ static NSString *cellID = @"infoID";
 #pragma mark- append info to tableView to display
 - (void)appendInfoToTableViewWithInfo:(NSString *)infoStr {
     InfoModel *model = [InfoModel modelWithInfoStr:infoStr];
-    
     [self.infoArray insertObject:model atIndex:0];
-    
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    
     [self insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
 }
 
@@ -57,10 +52,9 @@ static NSString *cellID = @"infoID";
 #pragma mark- <UITableViewDelegate>
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     InfoModel *model = self.infoArray[indexPath.row];
-    
     return model.height;
-    
 }
+
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 20;
 }
