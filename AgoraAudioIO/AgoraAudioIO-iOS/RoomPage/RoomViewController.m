@@ -58,9 +58,9 @@
     self.agoraKit = [AgoraRtcEngineKit sharedEngineWithAppId:[AppID appID] delegate:self];
     
     if (self.channelMode == ChannelModeLiveBroadcast) {
-        [self.agoraKit setChannelProfile:AgoraChannelProfileLiveBroadcasting];
-        AgoraClientRole role = self.clientRole == ClientRoleBroadcast ? AgoraClientRoleBroadcaster : AgoraClientRoleAudience;
-        [self.agoraKit setClientRole:role];
+        [self.agoraKit setChannelProfile:AgoraRtc_ChannelProfile_LiveBroadcasting];
+        AgoraRtcClientRole role = self.clientRole == ClientRoleBroadcast ? AgoraRtc_ClientRole_Broadcaster : AgoraRtc_ClientRole_Audience;
+        [self.agoraKit setClientRole:role withKey:nil];
     }
     
     if (self.audioMode != AudioCRMode_SDKCapture_SDKRender) {
@@ -78,7 +78,7 @@
             [self.tableView appendInfoToTableViewWithInfo:[NSString stringWithFormat:@"AudioCRMode_SDKCapture_ExterRender"]];
             [self.agoraKit setParameters: @"{\"che.audio.external_capture\": false}"];
             [self.agoraKit setParameters: @"{\"che.audio.external_render\": true}"];
-            [self.agoraKit setPlaybackAudioFrameParametersWithSampleRate:(NSInteger)_sampleRate channel:_channels mode:AgoraAudioRawFrameOperationModeReadOnly samplesPerCall:(NSInteger)_sampleRate * _channels * 0.01];
+            [self.agoraKit setPlaybackAudioFrameParametersWithSampleRate:(NSInteger)_sampleRate channel:_channels mode:AgoraRtc_RawAudioFrame_OpMode_ReadOnly samplesPerCall:(NSInteger)_sampleRate * _channels * 0.01];
             break;
             
         case AudioCRMode_SDKCapture_SDKRender:
@@ -91,15 +91,16 @@
             [self.tableView appendInfoToTableViewWithInfo:[NSString stringWithFormat:@"AudioCRMode_ExterCapture_ExterRender"]];
             [self.agoraKit setParameters: @"{\"che.audio.external_capture\": true}"];
             [self.agoraKit setParameters: @"{\"che.audio.external_render\": true}"];
-            [self.agoraKit setRecordingAudioFrameParametersWithSampleRate:(NSInteger)_sampleRate channel:_channels mode:AgoraAudioRawFrameOperationModeWriteOnly samplesPerCall:(NSInteger)_sampleRate * _channels * 0.01];
-            [self.agoraKit setPlaybackAudioFrameParametersWithSampleRate:(NSInteger)_sampleRate channel:_channels mode:AgoraAudioRawFrameOperationModeReadOnly samplesPerCall:(NSInteger)_sampleRate * _channels * 0.01];
+            
+            [self.agoraKit setRecordingAudioFrameParametersWithSampleRate:(NSInteger)_sampleRate channel:_channels mode:AgoraRtc_RawAudioFrame_OpMode_WriteOnly samplesPerCall:(NSInteger)_sampleRate * _channels * 0.01];
+            [self.agoraKit setPlaybackAudioFrameParametersWithSampleRate:(NSInteger)_sampleRate channel:_channels mode:AgoraRtc_RawAudioFrame_OpMode_ReadOnly samplesPerCall:(NSInteger)_sampleRate * _channels * 0.01];
             break;
             
         default:
             break;
     }
     
-    [self.agoraKit joinChannelByToken:nil channelId:self.channelName info:nil uid:0 joinSuccess:nil];
+    [self.agoraKit joinChannelByKey:nil channelName:self.channelName info:nil uid:0 joinSuccess:nil];
 }
 
 #pragma mark- Click Buttons
@@ -130,8 +131,8 @@
 
 - (IBAction)clickRoleChangedButton:(UIButton *)sender {
     sender.selected = !sender.selected;
-    AgoraClientRole role = sender.selected == YES ? AgoraClientRoleAudience : AgoraClientRoleBroadcaster;
-    [self.agoraKit setClientRole:role];
+    AgoraRtcClientRole role = sender.selected == YES ? AgoraRtc_ClientRole_Audience : AgoraRtc_ClientRole_Broadcaster;
+    [self.agoraKit setClientRole:role withKey:nil];
 }
 
 #pragma mark- <AgoraRtcEngineDelegate>
@@ -162,11 +163,11 @@
     [self.tableView appendInfoToTableViewWithInfo:@"Connection Did Lost"];
 }
 
-- (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurError:(AgoraErrorCode)errorCode {
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didOccurError:(AgoraRtcErrorCode)errorCode {
     [self.tableView appendInfoToTableViewWithInfo:[NSString stringWithFormat:@"Error Code:%zd", errorCode]];
 }
 
-- (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraRtcUserOfflineReason)reason {
     [self.tableView appendInfoToTableViewWithInfo:[NSString stringWithFormat:@"Uid:%zd didOffline reason:%zd", uid, reason]];
 }
 
@@ -174,8 +175,8 @@
     [self.tableView appendInfoToTableViewWithInfo:[NSString stringWithFormat:@"Self Rejoin Channel"]];
 }
 
-- (void)rtcEngine:(AgoraRtcEngineKit *)engine didClientRoleChanged:(AgoraClientRole)oldRole newRole:(AgoraClientRole)newRole {
-    NSString *newRoleStr = newRole == AgoraClientRoleAudience ? @"Audience" : @"Broadcast";
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didClientRoleChanged:(AgoraRtcClientRole)oldRole newRole:(AgoraRtcClientRole)newRole {
+    NSString *newRoleStr = newRole == AgoraRtc_ClientRole_Audience ? @"Audience" : @"Broadcast";
     [self.tableView appendInfoToTableViewWithInfo:[NSString stringWithFormat:@"Self became %@", newRoleStr]];
 }
 
